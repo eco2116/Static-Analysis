@@ -1,8 +1,10 @@
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class NgramAnalysis {
 
@@ -32,32 +34,87 @@ public class NgramAnalysis {
         int s = validateSlide(args[1], n);
         File inFile = validateFile(args[2]);
 
+        byte[] data = new byte[n * 1024];
+        byte[] window = new byte[n];
+
         NgramAnalysis ngramAnalysis = new NgramAnalysis(n, s, inFile);
         try {
-            ngramAnalysis.readFile();
+            //ngramAnalysis.readFile();
+
+            RollingBufferInputStream bufferInput = new RollingBufferInputStream(new FileInputStream(inFile), data);
+            while(bufferInput.hasAvailableBytes(n)) {
+                StringBuilder sb = new StringBuilder();
+
+                window = Arrays.copyOfRange(bufferInput.getBuffer(), bufferInput.start, bufferInput.start + n);
+                for(byte b: window) {
+                    sb.append(String.format("%02X ", b));
+                }
+                System.out.println("Added to count for byte " + sb.toString());
+                bufferInput.moveStart(s);
+            }
+
         } catch(Exception e) {
             e.printStackTrace();
         }
 
+
     }
+
+
+
+//    int               blockSize   = 1024;
+//    byte[]            buffer      = new byte[blockSize * 4];
+//
+//    RollingBufferInputStream bufferInput =
+//            new RollingBufferInputStream(sourceInputStream, buffer);
+//
+//
+//    while(bufferInput.hasAvailableBytes(blockSize)){
+//
+//        boolean matchFound = lookForMatch(
+//                bufferInput.getBuffer(),
+//                bufferInput.getStart(),
+//                bufferInput.getEnd());
+//
+//        if(matchFound){
+//            localFileSource.moveStart(this.blockSize);
+//        } else {
+//            localFileSource.moveStart(1);
+//        }
+//    }
 
     private void readFile() throws Exception {
 
         FileInputStream fileInputStream = new FileInputStream(file);
         byte data[] = new byte[n];
-        byte excess[] = new byte[0];
+
         int bytesRead;
 
         int offset;
+        boolean start = true;
+        LinkedList<Byte> list = new LinkedList<Byte>();
         // TODO: send bytes read
         while((bytesRead = fileInputStream.read(data)) != -1) {
+
+            if(start) {
+                for(int i=0; i<n; i++) {
+                    list.add(data[i]);
+                }
+                start = false;
+            } else {
+                for(int i=0; i<s; i++) {
+                    list.add(data[i]);
+                }
+            }
 
             System.out.println("Read " + bytesRead + " bytes");
 
 
-            byte[] filledBytes = Arrays.copyOf()
+
+
+            //byte[] filledBytes = Arrays.copyOf()
             // Increment count for bytes read
-            slideWindow(data);
+            //slideWindow(data);
 
         }
         fileInputStream.close();
@@ -68,7 +125,7 @@ public class NgramAnalysis {
         // TODO: incomplete byte array
         System.out.println(buff.length / n);
 
-        for(int i = 0; i < buff.length / n; i++) {
+        for(int i = 0; i < buff.length; i++) {
             int begin = i * n - (n - s);
             begin = begin < 0 ? 0 : begin;
             int end = ((i + 1) * n) - (n - s) + 1;
