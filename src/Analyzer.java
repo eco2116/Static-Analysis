@@ -11,37 +11,42 @@ public class Analyzer {
         if(args.length != 4) {
             failWithMessage("Incorrect number of arguments: required 4");
         }
-        int n = validateNgram(args[0]);
+        int n = validateNGram(args[0]);
         int s = validateSlide(args[1], n);
         File inFile = validateFile(args[2]);
 
         byte[] data = new byte[n * 1024];
         byte[] window;
 
-        HashMap<NGram, Long> ngrams = new HashMap<NGram, Long>();
+        HashMap<NGram, Long> nGrams = new HashMap<NGram, Long>();
 
         try {
             FileInputStream fis = new FileInputStream(inFile);
             RollingBufferInputStream bufferInput = new RollingBufferInputStream(fis, data);
             while(bufferInput.hasAvailableBytes(n)) {
-                StringBuilder sb = new StringBuilder();
 
                 window = Arrays.copyOfRange(bufferInput.getBuffer(), bufferInput.getStart(), bufferInput.getStart() + n);
 
                 bufferInput.moveStart(s);
                 NGram key = new NGram(window);
-                if(ngrams.containsKey(key)) {
-                    ngrams.put(key, ngrams.get(key) + 1);
+                if(nGrams.containsKey(key)) {
+                    nGrams.put(key, nGrams.get(key) + 1);
                 } else {
-                    ngrams.put(key, 1L);
+                    nGrams.put(key, 1L);
                 }
             }
             fis.close();
 
             int total = 0;
-            for(NGram ng : ngrams.keySet()) {
-                long count = ngrams.get(ng);
+            for(NGram ng : nGrams.keySet()) {
+                long count = nGrams.get(ng);
+                //System.out.println("Count for bytes " + ng.toString() + " is: " + count);
+                total += count;
+            }
+            for(NGram ng : nGrams.keySet()) {
+                long count = nGrams.get(ng);
                 System.out.println("Count for bytes " + ng.toString() + " is: " + count);
+                System.out.println("% of total: " + 100 * count / total);
                 total += count;
             }
             System.out.println("Total bytes is: " + total);
@@ -51,7 +56,7 @@ public class Analyzer {
         }
     }
 
-    private static int validateNgram(String input) {
+    private static int validateNGram(String input) {
         // For efficiency, only valid n are: 1, 2, 3
         int n = -1;
         try {
