@@ -1,7 +1,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Analyzer {
@@ -42,17 +42,17 @@ public class Analyzer {
                 long count = nGrams.get(ng);
                 total += count;
             }
-//            for(NGram ng : nGrams.keySet()) {
-//                long count = nGrams.get(ng);
-//                //System.out.println("Count for bytes " + ng.toString() + " is: " + count);
-//                //System.out.println("% of total: " + 100L * (count / total));
-//            }
+
             Map<NGram, Long> sortedByCount = MapUtil.sortByValue(nGrams);
+            int rank = 1;
             for(NGram ng : sortedByCount.keySet()) {
+                if (rank > 20) { break; }
                 long count = nGrams.get(ng);
-                BigDecimal percent = new BigDecimal((count / total) * 100);
-                System.out.printf("Percentage In Exam: %.2f%%%n", percent);
-                System.out.println(ng.toString() + " has count " + nGrams.get(ng) + " which is " + percent.toString());
+                DecimalFormat df = new DecimalFormat("0.00##");
+                String percent = df.format(((double) count / total) * 100);
+                System.out.println("#" + rank++ + " : " + ng.toString() + " has count " + nGrams.get(ng) +
+                        " which is " + percent + " %");
+
             }
 
             System.out.println("Total bytes is: " + total);
@@ -108,28 +108,23 @@ public class Analyzer {
     /*
     http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
      */
-    public static class MapUtil
-    {
+    public static class MapUtil {
         public static <K, V extends Comparable<? super V>> Map<K, V>
-        sortByValue( Map<K, V> map )
-        {
-            List<Map.Entry<K, V>> list =
-                    new LinkedList<Map.Entry<K, V>>( map.entrySet() );
-            Collections.sort( list, new Comparator<Map.Entry<K, V>>()
-            {
-                public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
-                {
-                    if(o1.getValue().equals(o2.getValue())) {
+        sortByValue(Map<K, V> map) {
+            List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+            Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+                // TODO: fix o1 o2 orders
+                public int compare(Map.Entry<K, V> o2, Map.Entry<K, V> o1) {
+                    if (o1.getValue().equals(o2.getValue())) {
                         return ((NGram) o1.getKey()).compareTo((NGram) o2.getKey());
                     }
-                    return (o1.getValue()).compareTo( o2.getValue() );
+                    return (o1.getValue()).compareTo(o2.getValue());
                 }
-            } );
+            });
 
             Map<K, V> result = new LinkedHashMap<K, V>();
-            for (Map.Entry<K, V> entry : list)
-            {
-                result.put( entry.getKey(), entry.getValue() );
+            for (Map.Entry<K, V> entry : list) {
+                result.put(entry.getKey(), entry.getValue());
             }
             return result;
         }
