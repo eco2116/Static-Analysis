@@ -2,6 +2,9 @@
 import java.io.InputStream;
 import java.io.IOException;
 
+/**
+ * http://tutorials.jenkov.com/java-howto/iterating-streams-using-buffers.html
+ */
 public class RollingBufferInputStream {
 
     InputStream source    = null;
@@ -59,9 +62,8 @@ public class RollingBufferInputStream {
     }
 
     private void fillDataFromStreamIntoBuffer() throws IOException {
-        this.bytesRead  = this.source.read(this.buffer, this.end,
-                this.buffer.length - this.end);
-        this.end       += this.bytesRead;
+        this.bytesRead  = this.source.read(this.buffer, this.end, this.buffer.length - this.end);
+        this.end += this.bytesRead;
     }
 
     private void compact() {
