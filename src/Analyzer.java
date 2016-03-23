@@ -1,8 +1,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Analyzer {
 
@@ -37,18 +36,22 @@ public class Analyzer {
             }
             fis.close();
 
-            int total = 0;
+            long total = 0;
+            for(NGram ng : nGrams.keySet()) {
+                long count = nGrams.get(ng);
+                total += count;
+            }
             for(NGram ng : nGrams.keySet()) {
                 long count = nGrams.get(ng);
                 //System.out.println("Count for bytes " + ng.toString() + " is: " + count);
+                //System.out.println("% of total: " + 100L * (count / total));
                 total += count;
             }
-            for(NGram ng : nGrams.keySet()) {
-                long count = nGrams.get(ng);
-                System.out.println("Count for bytes " + ng.toString() + " is: " + count);
-                System.out.println("% of total: " + 100 * count / total);
-                total += count;
+            Map<NGram, Long> sortedByCount = MapUtil.sortByValue(nGrams);
+            for(NGram ng : sortedByCount.keySet()) {
+                System.out.println(ng.toString() + " has count " + nGrams.get(ng));
             }
+
             System.out.println("Total bytes is: " + total);
 
         } catch(Exception e) {
@@ -97,6 +100,44 @@ public class Analyzer {
     private static void failWithMessage(String msg) {
         System.out.println(msg);
         System.exit(1);
+    }
+
+    /*
+    http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
+     */
+    public static class MapUtil
+    {
+        public static <K, V extends Comparable<? super V>> Map<K, V>
+        sortByValue( Map<K, V> map )
+        {
+            List<Map.Entry<K, V>> list =
+                    new LinkedList<Map.Entry<K, V>>( map.entrySet() );
+            Collections.sort( list, new Comparator<Map.Entry<K, V>>()
+            {
+                //http://stackoverflow.com/questions/5108091/java-comparator-for-byte-array-lexicographic
+                public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
+                {
+                    byte[] left = ((NGram) o1.getKey()).getData();
+                    byte[] right = ((NGram) o2.getKey()).getData();
+                    for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
+                        int a = (left[i] & 0xff);
+                        int b = (right[j] & 0xff);
+                        if (a != b) {
+                            return a - b;
+                        }
+                    }
+                    return left.length - right.length;
+                }
+            } );
+
+
+            Map<K, V> result = new LinkedHashMap<K, V>();
+            for (Map.Entry<K, V> entry : list)
+            {
+                result.put( entry.getKey(), entry.getValue() );
+            }
+            return result;
+        }
     }
 
 }
