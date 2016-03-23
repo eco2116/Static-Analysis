@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Analyzer {
@@ -41,15 +42,17 @@ public class Analyzer {
                 long count = nGrams.get(ng);
                 total += count;
             }
-            for(NGram ng : nGrams.keySet()) {
-                long count = nGrams.get(ng);
-                //System.out.println("Count for bytes " + ng.toString() + " is: " + count);
-                //System.out.println("% of total: " + 100L * (count / total));
-                total += count;
-            }
+//            for(NGram ng : nGrams.keySet()) {
+//                long count = nGrams.get(ng);
+//                //System.out.println("Count for bytes " + ng.toString() + " is: " + count);
+//                //System.out.println("% of total: " + 100L * (count / total));
+//            }
             Map<NGram, Long> sortedByCount = MapUtil.sortByValue(nGrams);
             for(NGram ng : sortedByCount.keySet()) {
-                System.out.println(ng.toString() + " has count " + nGrams.get(ng));
+                long count = nGrams.get(ng);
+                BigDecimal percent = new BigDecimal((count / total) * 100);
+                System.out.printf("Percentage In Exam: %.2f%%%n", percent);
+                System.out.println(ng.toString() + " has count " + nGrams.get(ng) + " which is " + percent.toString());
             }
 
             System.out.println("Total bytes is: " + total);
@@ -114,22 +117,14 @@ public class Analyzer {
                     new LinkedList<Map.Entry<K, V>>( map.entrySet() );
             Collections.sort( list, new Comparator<Map.Entry<K, V>>()
             {
-                //http://stackoverflow.com/questions/5108091/java-comparator-for-byte-array-lexicographic
                 public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
                 {
-                    byte[] left = ((NGram) o1.getKey()).getData();
-                    byte[] right = ((NGram) o2.getKey()).getData();
-                    for (int i = 0, j = 0; i < left.length && j < right.length; i++, j++) {
-                        int a = (left[i] & 0xff);
-                        int b = (right[j] & 0xff);
-                        if (a != b) {
-                            return a - b;
-                        }
+                    if(o1.getValue().equals(o2.getValue())) {
+                        return ((NGram) o1.getKey()).compareTo((NGram) o2.getKey());
                     }
-                    return left.length - right.length;
+                    return (o1.getValue()).compareTo( o2.getValue() );
                 }
             } );
-
 
             Map<K, V> result = new LinkedHashMap<K, V>();
             for (Map.Entry<K, V> entry : list)
