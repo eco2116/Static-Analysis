@@ -13,7 +13,7 @@ public class Analyzer {
         }
         int n = validateNGram(args[0]);
         int s = validateSlide(args[1], n);
-        File inFile = validateFile(args[2]);
+        File inFile = validateFile(args[2]); // TODO: output data to file, add various flags
 
         byte[] data = new byte[n * 1024];
         byte[] window;
