@@ -15,6 +15,11 @@ ip = IP(src=src_ip, dst=dst_ip)
 tcp = TCP(sport=src_port, dport=dst_port)
 
 pkt = ip / tcp / get_body
+
+if pkt:
+    show(pkt)
+    print str(pkt)
+
 send(pkt)
 
 f.close()
