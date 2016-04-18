@@ -3,10 +3,10 @@ import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 from scapy.all import *
-import random, string
+import random, string, sys
 
-src_port = argv[1]
-dst_port = argv[2]
+src_port = sys.argv[1]
+dst_port = sys.argv[2]
 
 loop_ip = "127.0.0.1"
 
