@@ -5,8 +5,8 @@ logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 import random, string, sys
 
-src_port = sys.argv[1]
-dst_port = sys.argv[2]
+src_port = int(sys.argv[1])
+dst_port = int(sys.argv[2])
 
 loop_ip = "127.0.0.1"
 
@@ -19,6 +19,9 @@ for d_port in range(3000,3020):
     send(pkt)
 
 # Part (b)
+def random_word(length):
+    return ''.join(random.choice(string) for i in range(length))
+
 tcp = TCP(sport=src_port, dport=dst_port)
 for i in range(1,5):
     rand_str = random_word(10)
@@ -26,5 +29,3 @@ for i in range(1,5):
     pkt = ip / tcp / rand_str
     send(pkt)
 
-def random_word(length):
-    return ''.join(random.choice(string) for i in range(length))
