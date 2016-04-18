@@ -20,7 +20,7 @@ for d_port in range(3000,3020):
 
 # Part (b)
 def random_word(length):
-    return ''.join(random.choice(string) for i in range(length))
+    return ''.join(random.choice(string.printable) for i in range(length))
 
 tcp = TCP(sport=src_port, dport=dst_port)
 for i in range(1,5):
