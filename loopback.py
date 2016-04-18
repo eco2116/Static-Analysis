@@ -23,7 +23,7 @@ def random_str(length):
     return ''.join(random.choice(string.printable) for i in range(length))
 
 tcp = TCP(sport=src_port, dport=dst_port)
-for i in range(1,5):
+for i in range(0,5):
     rand_str = random_str(10)
     print("Random string: " + rand_str)
     pkt = ip / tcp / rand_str
