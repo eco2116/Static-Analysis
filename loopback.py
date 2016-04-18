@@ -1,3 +1,7 @@
+# Supress warning about no default IPv6 route
+import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+
 from scapy.all import *
 import random, string
 
