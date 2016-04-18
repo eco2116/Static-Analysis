@@ -17,7 +17,7 @@ tcp = TCP(sport=src_port, dport=dst_port)
 pkt = ip / tcp / get_body
 
 if pkt:
-    show(pkt)
+    pkt.show()
     print str(pkt)
 
 send(pkt)
