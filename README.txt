@@ -63,11 +63,22 @@ see the attached link below.
 # Part 2
 #########################################################
 
------ping (2a)-----
+-----ping.py (2a)-----
 
------get (2a)-----
+In this python script, I use scapy to send an ICMP (ping) message given an IP address. You must have root access
+to run this script.
 
------loopback (2a)-----
+Example command:
+python ping.py 160.39.110.199
+
+-----get.py (2a)-----
+
+In this python script, I read source IP and port and destination IP and port from a file named inpartb.txt. This
+input file also contains a sample get message body, which is read in and used as the body of a new get message
+which is sent to the chosen destination.
+
+-----loopback.py (2a)-----
+
 
 
 #########################################################

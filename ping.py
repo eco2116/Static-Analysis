@@ -2,7 +2,7 @@
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
-# Import scapy
+# Import sys and scapy
 import sys
 from scapy.all import sr1,IP,ICMP
 
