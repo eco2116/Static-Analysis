@@ -3,19 +3,13 @@ import java.util.Arrays;
 public class NGram implements Comparable<NGram> {
 
     private byte[] data;
-    private int windowSize;
 
     public NGram(byte[] data) {
         this.data = data;
-        this.windowSize = data.length;
     }
 
     public byte[] getData() {
         return data;
-    }
-
-    public int getWindowSize() {
-        return windowSize;
     }
 
     @Override

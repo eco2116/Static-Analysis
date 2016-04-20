@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -13,7 +14,9 @@ public class Analyzer {
         }
         int n = validateNGram(args[0]);
         int s = validateSlide(args[1], n);
-        File inFile = validateFile(args[2]); // TODO: output data to file, add various flags
+        File inFile = validateFile(args[2]);
+        System.out.println("Processing file [name = " + args[2] + ", size = " + inFile.length() +
+                " bytes, n = " + n + ", s = " + s + "]");
 
         byte[] data = new byte[n * 1024];
         byte[] window;
@@ -21,8 +24,14 @@ public class Analyzer {
         HashMap<NGram, Long> nGrams = new HashMap<NGram, Long>();
 
         try {
+            // Create writer to output file
+            PrintWriter printWriter = new PrintWriter(args[3]);
+
+            // Create a rolling buffer input stream to read and process n-grams in a stream using sliding window
             FileInputStream fis = new FileInputStream(inFile);
             RollingBufferInputStream bufferInput = new RollingBufferInputStream(fis, data);
+
+
             while(bufferInput.hasAvailableBytes(n)) {
 
                 window = Arrays.copyOfRange(bufferInput.getBuffer(), bufferInput.getStart(), bufferInput.getStart() + n);
@@ -50,12 +59,11 @@ public class Analyzer {
                 long count = nGrams.get(ng);
                 DecimalFormat df = new DecimalFormat("0.00##");
                 String percent = df.format(((double) count / total) * 100);
-                System.out.println("#" + rank++ + " : " + ng.toString() + " has count " + nGrams.get(ng) +
-                        " which is " + percent + " %");
+                printWriter.write("#" + rank++ + " : " + ng.toString() + " has count " + nGrams.get(ng) +
+                        " which is " + percent + " %\n");
 
             }
-
-            System.out.println("Total bytes is: " + total);
+            printWriter.close();
 
         } catch(Exception e) {
             e.printStackTrace();
@@ -96,12 +104,12 @@ public class Analyzer {
         if(!file.exists() || !file.canRead()) {
             failWithMessage("Invalid file: either does not exist or is not readable");
         }
-        System.out.println("file size " + file.length());
         return file;
     }
 
     private static void failWithMessage(String msg) {
         System.out.println(msg);
+        System.out.println("Usage: java Analyzer <n> <s> <inputFile> <outputFile>");
         System.exit(1);
     }
 

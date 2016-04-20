@@ -7,6 +7,8 @@ http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
 ssdeep -b prog1 > hash1.txt
 ssdeep -bm hash1.txt prog2
 
+ssdeep -pa *
+
 strings prog1
 
 http://www.secdev.org/projects/scapy/build_your_own_tools.html

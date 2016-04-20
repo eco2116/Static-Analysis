@@ -7,15 +7,11 @@ import java.io.IOException;
  */
 public class RollingBufferInputStream {
 
-    InputStream source    = null;
-
-    protected byte[]      buffer    = null;
-    protected int         start     = 0; //current location in buffer.
-    protected int         end       = 0; //current limit of data read
-    //into the buffer
-    //= next element to read into.
-
-    protected int         bytesRead = 0;
+    private InputStream source = null;
+    private byte[] buffer = null;
+    private int start = 0;
+    private int end = 0;
+    private int bytesRead = 0;
 
     public RollingBufferInputStream(InputStream source, byte[] buffer) {
         this.source = source;
@@ -30,51 +26,43 @@ public class RollingBufferInputStream {
         return start;
     }
 
-    public int getEnd() {
-        return end;
-    }
-
-    public void moveStart(int noOfBytesToMove){
-        if(this.start + noOfBytesToMove > this.end){
-            throw new RuntimeException(
-                    "Attempt to move buffer 'start' beyond 'end'. start= "
-                            + this.start + ", end: " + this.end + ", bytesToMove: "
-                            + noOfBytesToMove);
+    public void moveStart(int noOfBytesToMove) throws RollingBufferInputStreamException{
+        if(this.start + noOfBytesToMove > this.end) {
+            throw new RollingBufferInputStreamException("Attempt to move buffer 'start' beyond 'end'. start= "
+                    + this.start + ", end: " + this.end + ", bytesToMove: " + noOfBytesToMove);
         }
         this.start += noOfBytesToMove;
     }
 
-    public int availableBytes() {
-        return this.end - this.start;
-    }
-
-    public boolean hasAvailableBytes(int numberOfBytes) throws IOException {
-        if(! hasAvailableBytesInBuffer(numberOfBytes)){
+    public boolean hasAvailableBytes(int numberOfBytes) throws RollingBufferInputStreamException {
+        if(!hasAvailableBytesInBuffer(numberOfBytes)){
             if(streamHasMoreData()){
-                if(!bufferHasSpaceFor(numberOfBytes)){
+                if(!bufferHasSpaceFor(numberOfBytes)) {
                     compact();
                 }
                 fillDataFromStreamIntoBuffer();
             }
         }
-
         return hasAvailableBytesInBuffer(numberOfBytes);
     }
 
-    private void fillDataFromStreamIntoBuffer() throws IOException {
-        this.bytesRead  = this.source.read(this.buffer, this.end, this.buffer.length - this.end);
+    private void fillDataFromStreamIntoBuffer() throws RollingBufferInputStreamException {
+        try {
+            this.bytesRead  = this.source.read(this.buffer, this.end, this.buffer.length - this.end);
+        } catch(IOException e) {
+            throw new RollingBufferInputStreamException("Unexpected failure reading from rolling buffer input stream");
+        }
         this.end += this.bytesRead;
     }
 
     private void compact() {
         int bytesToCopy = end - start;
-
+        // TODO: array copy?
         for(int i=0; i<bytesToCopy; i++){
             this.buffer[i] = this.buffer[start + i];
         }
-
         this.start = 0;
-        this.end   = bytesToCopy;
+        this.end = bytesToCopy;
     }
 
     private boolean bufferHasSpaceFor(int numberOfBytes) {
@@ -86,7 +74,12 @@ public class RollingBufferInputStream {
     }
 
     private boolean hasAvailableBytesInBuffer(int numberOfBytes) {
-        return   (this.end - this.start) >= numberOfBytes;
+        return (this.end - this.start) >= numberOfBytes;
     }
 
+    public static class RollingBufferInputStreamException extends Exception {
+        public RollingBufferInputStreamException(String msg) {
+            super(msg);
+        }
+    }
 }
