@@ -66,20 +66,29 @@ see the attached link below.
 -----ping.py (2a)-----
 
 In this python script, I use scapy to send an ICMP (ping) message given an IP address. You must have root access
-to run this script.
+to run this script. The output from tcpdump for the packet sent and the response received is in ping_dump.txt.
 
 Example command:
 python ping.py 160.39.110.199
 
------get.py (2a)-----
+-----get.py (2b)-----
 
 In this python script, I read source IP and port and destination IP and port from a file named inpartb.txt. This
 input file also contains a sample get message body, which is read in and used as the body of a new get message
-which is sent to the chosen destination.
+which is sent to the chosen destination. The output from tcpdump is stored in the file in.txt.
 
------loopback.py (2a)-----
+Example command:
+python get.py
 
+-----loopback.py (2c)-----
 
+This python script first sends TCP/IP packets with empty message bodies to destination ports ranging from 3000 to 3020,
+one message for each port. The loopback IP is hardcoded as 127.0.0.1. The user will input the source port to be used
+in part 1. For part 2, random strings of length 10 are generated and sent as the message body of TCP/IP packets
+on the loopback IP address, using the user-inputted source and destination ports.
+
+Example command:
+python loopback.py 8001 8002
 
 #########################################################
 # Resources used
