@@ -14,6 +14,7 @@ public class NGram implements Comparable<NGram> {
 
     @Override
     public String toString() {
+        // String to print out hex value of byte
         StringBuilder sb = new StringBuilder();
         for(byte b: this.data) {
             sb.append(String.format("%02X ", b));
@@ -23,15 +24,20 @@ public class NGram implements Comparable<NGram> {
 
     @Override
     public int hashCode() {
+        // Use Arrays class to generate custom hash of bytes in the data array
         return Arrays.hashCode(this.data);
     }
 
     @Override
     public boolean equals(Object obj) {
+        // Use Arrays class to generate custom equals function using bytes in data array
         return obj instanceof NGram && ((obj == this) || Arrays.equals(data, ((NGram) obj).getData()));
     }
 
-    //http://stackoverflow.com/questions/5108091/java-comparator-for-byte-array-lexicographic
+    /*
+        Custom comparator so bytes with lower values will be returned in top n-grams (e.g.: 0x00 before 0x01)
+        Resource used: http://stackoverflow.com/questions/5108091/java-comparator-for-byte-array-lexicographic
+     */
     @Override
     public int compareTo(NGram ng) {
         byte[] left = this.getData();

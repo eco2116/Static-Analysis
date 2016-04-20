@@ -9,18 +9,20 @@ public class Analyzer {
 
     public static void main(String[] args) {
 
+        // Validate command line parameters
         if(args.length != 4) {
             failWithMessage("Incorrect number of arguments: required 4");
         }
         int n = validateNGram(args[0]);
         int s = validateSlide(args[1], n);
         File inFile = validateFile(args[2]);
+
+        long startTime = System.currentTimeMillis();
         System.out.println("Processing file [name = " + args[2] + ", size = " + inFile.length() +
                 " bytes, n = " + n + ", s = " + s + "]");
 
-        byte[] data = new byte[n * 1024];
         byte[] window;
-
+        byte[] data = new byte[n * 1024];
         HashMap<NGram, Long> nGrams = new HashMap<NGram, Long>();
 
         try {
@@ -31,12 +33,14 @@ public class Analyzer {
             FileInputStream fis = new FileInputStream(inFile);
             RollingBufferInputStream bufferInput = new RollingBufferInputStream(fis, data);
 
-
+            // Continue analyzing windows as long as file has more bytes
             while(bufferInput.hasAvailableBytes(n)) {
 
+                // Use rolling buffer to capture current window and advance marker
                 window = Arrays.copyOfRange(bufferInput.getBuffer(), bufferInput.getStart(), bufferInput.getStart() + n);
-
                 bufferInput.moveStart(s);
+
+                // Update hash map with new n-gram
                 NGram key = new NGram(window);
                 if(nGrams.containsKey(key)) {
                     nGrams.put(key, nGrams.get(key) + 1);
@@ -46,12 +50,14 @@ public class Analyzer {
             }
             fis.close();
 
+            // Calculate total n-grams for percentages
             long total = 0;
             for(NGram ng : nGrams.keySet()) {
                 long count = nGrams.get(ng);
                 total += count;
             }
 
+            // Sort and print top 20 n-grams to output file
             Map<NGram, Long> sortedByCount = MapUtil.sortByValue(nGrams);
             int rank = 1;
             for(NGram ng : sortedByCount.keySet()) {
@@ -61,9 +67,13 @@ public class Analyzer {
                 String percent = df.format(((double) count / total) * 100);
                 printWriter.write("#" + rank++ + " : " + ng.toString() + " has count " + nGrams.get(ng) +
                         " which is " + percent + " %\n");
-
             }
             printWriter.close();
+
+            // Print elapsed time to stdout
+            long endTime = System.currentTimeMillis();
+            long elapsed = endTime - startTime;
+            System.out.println("Total running time: " + elapsed + " ms");
 
         } catch(Exception e) {
             e.printStackTrace();
@@ -78,7 +88,6 @@ public class Analyzer {
         } catch(NumberFormatException e) {
             failWithMessage("Invalid n: Only accept integer values");
         }
-
         if(n > 3 || n < 1) {
             failWithMessage("Invalid n: Only accept integers in range (1, 3)");
         }
@@ -93,6 +102,7 @@ public class Analyzer {
             System.out.println("Invalid s: Only accept integer values");
             System.exit(1);
         }
+        // Ensure slide is valid given n
         if(s > n || s < 1) {
             failWithMessage("Invalid s: Only accept integers in range (1, 3)");
         }
@@ -100,6 +110,7 @@ public class Analyzer {
     }
 
     private static File validateFile(String name) {
+        // Ensure input file can be created is readable
         File file = new File(name);
         if(!file.exists() || !file.canRead()) {
             failWithMessage("Invalid file: either does not exist or is not readable");
@@ -108,20 +119,22 @@ public class Analyzer {
     }
 
     private static void failWithMessage(String msg) {
+        // Print error message, usage, and exit cleanly
         System.out.println(msg);
         System.out.println("Usage: java Analyzer <n> <s> <inputFile> <outputFile>");
         System.exit(1);
     }
 
     /*
-    http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
+        Nested utility class used to sort the n-gram count hash map by count to generate top 20 n-grams
+        Resource used: http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
      */
     public static class MapUtil {
-        public static <K, V extends Comparable<? super V>> Map<K, V>
-        sortByValue(Map<K, V> map) {
+        public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
             List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
             Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
-                // TODO: fix o1 o2 orders
+
+                // Implement custom comparator so ties will return the lower hex value
                 public int compare(Map.Entry<K, V> o2, Map.Entry<K, V> o1) {
                     if (o1.getValue().equals(o2.getValue())) {
                         return ((NGram) o1.getKey()).compareTo((NGram) o2.getKey());
@@ -129,7 +142,7 @@ public class Analyzer {
                     return (o1.getValue()).compareTo(o2.getValue());
                 }
             });
-
+            // Create hash map to hold sorted n-grams and counts
             Map<K, V> result = new LinkedHashMap<K, V>();
             for (Map.Entry<K, V> entry : list) {
                 result.put(entry.getKey(), entry.getValue());

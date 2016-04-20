@@ -26,15 +26,19 @@ public class RollingBufferInputStream {
         return start;
     }
 
-    public void moveStart(int noOfBytesToMove) throws RollingBufferInputStreamException{
+    public void moveStart(int noOfBytesToMove) throws RollingBufferInputStreamException {
+        // Ensure marker can be moved successfully
         if(this.start + noOfBytesToMove > this.end) {
             throw new RollingBufferInputStreamException("Attempt to move buffer 'start' beyond 'end'. start= "
                     + this.start + ", end: " + this.end + ", bytesToMove: " + noOfBytesToMove);
         }
+
+        // Move marker forward based on input
         this.start += noOfBytesToMove;
     }
 
     public boolean hasAvailableBytes(int numberOfBytes) throws RollingBufferInputStreamException {
+        // Ensure that the rolling buffer has a particular number of bytes available to read
         if(!hasAvailableBytesInBuffer(numberOfBytes)){
             if(streamHasMoreData()){
                 if(!bufferHasSpaceFor(numberOfBytes)) {
@@ -47,6 +51,7 @@ public class RollingBufferInputStream {
     }
 
     private void fillDataFromStreamIntoBuffer() throws RollingBufferInputStreamException {
+        // Pull out data from the stream to fill the buffer
         try {
             this.bytesRead  = this.source.read(this.buffer, this.end, this.buffer.length - this.end);
         } catch(IOException e) {
@@ -56,8 +61,8 @@ public class RollingBufferInputStream {
     }
 
     private void compact() {
+        // Compact the buffer so more data can be read in
         int bytesToCopy = end - start;
-        // TODO: array copy?
         for(int i=0; i<bytesToCopy; i++){
             this.buffer[i] = this.buffer[start + i];
         }
@@ -66,10 +71,12 @@ public class RollingBufferInputStream {
     }
 
     private boolean bufferHasSpaceFor(int numberOfBytes) {
+        // Ensure the buffer has space to fill in a given number of bytes
         return (this.buffer.length - this.start) >= numberOfBytes;
     }
 
     public boolean streamHasMoreData() {
+        // Check if the stream is at its end or not
         return this.bytesRead > -1;
     }
 
@@ -77,6 +84,9 @@ public class RollingBufferInputStream {
         return (this.end - this.start) >= numberOfBytes;
     }
 
+    /*
+        Custom exception class when rolling buffer input stream fails
+     */
     public static class RollingBufferInputStreamException extends Exception {
         public RollingBufferInputStreamException(String msg) {
             super(msg);
