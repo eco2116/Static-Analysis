@@ -59,6 +59,12 @@ This helper class keeps at least N bytes available in a buffer and reads bytes f
 I used to develop this class is listed in my resources section. For a more detailed description of its functionality,
 see the attached link below.
 
+To compile, in the directory with the java files, run:
+javac *.java
+
+To run:
+java Analyzer <n> <s> <inputFile> <outputFile>
+
 #########################################################
 # Part 2
 #########################################################
