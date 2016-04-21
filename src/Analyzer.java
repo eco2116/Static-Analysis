@@ -1,10 +1,17 @@
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * Evan O'Connor (eco2116)
+ * Network Security
+ * Programming Assignment 3
+ *
+ * Analyzer.java
+ *
+ * Generates the top 20 n-grams for a given binary file and prints to an output file. User can select
+ * values of n and slide if they are in the range of the assignment (see validation below).
+ */
 public class Analyzer {
 
     public static void main(String[] args) {
@@ -75,8 +82,12 @@ public class Analyzer {
             long elapsed = endTime - startTime;
             System.out.println("Total running time: " + elapsed + " ms");
 
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(FileNotFoundException e) {
+            failWithMessage("One of the files you provided could not be found.");
+        } catch(RollingBufferInputStream.RollingBufferInputStreamException e) {
+            failWithMessage("Encountered a problem with the rolling buffer input stream.");
+        } catch(IOException e) {
+            failWithMessage("Encountered a problem closing the file input stream.");
         }
     }
 

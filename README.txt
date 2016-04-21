@@ -76,7 +76,10 @@ python ping.py 160.39.110.199
 In this python script, I read source IP and port and destination IP and port from a file named inpartb.txt. This
 input file also contains a sample get message body (from http://ssdeep.sourceforge.net/), which is read in and used as
 the body of a new get message which is sent to the chosen destination. The output from tcpdump is stored in
-the file in.txt.
+the file in.txt. As per the professor's request, I had to manually copy the get request from Wireshark, which meant
+that some non-printable ASCII characters (e.g.: line feed and carriage return at the end of the message body)
+were not included (at the beginning and end of the message). However, the get message itself remains intact,
+and that can be seen by comparing the output of Wireshark with in.txt.
 
 Example command:
 python get.py

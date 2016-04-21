@@ -1,9 +1,15 @@
-
 import java.io.InputStream;
 import java.io.IOException;
 
 /**
- * http://tutorials.jenkov.com/java-howto/iterating-streams-using-buffers.html
+ * Evan O'Connor (eco2116)
+ * Network Security
+ * Programming Assignment 3
+ *
+ * RollingBufferInputStream.java
+ * Resource used: http://tutorials.jenkov.com/java-howto/iterating-streams-using-buffers.html
+ *
+ * Helper class for reading in from a stream into a buffer in order to move a sliding window to find n-grams
  */
 public class RollingBufferInputStream {
 

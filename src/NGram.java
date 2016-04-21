@@ -1,5 +1,15 @@
 import java.util.Arrays;
 
+/**
+ * Evan O'Connor (eco2116)
+ * Network Security
+ * Programming Assignment 3
+ *
+ * NGram.java
+ *
+ * A wrapper around the n-gram (array of bytes) that can be sorted as stated in the assignment and pretty
+ * printed in hex format.
+ */
 public class NGram implements Comparable<NGram> {
 
     private byte[] data;
