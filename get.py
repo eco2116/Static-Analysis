@@ -1,3 +1,16 @@
+########################################################################
+# Evan O'Connor (eco2116)
+# Network Security
+# Programming Assignment 3
+#
+# get.py
+# This script sends a get message, reading from a file inpartb.txt which
+# contains the source and destination IP addresses and ports along with
+# the get message.
+# Usage: python get.py
+#
+########################################################################
+
 # Supress warning about no default IPv6 route
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)

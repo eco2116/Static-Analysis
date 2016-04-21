@@ -63,10 +63,12 @@ see the attached link below.
 # Part 2
 #########################################################
 
+Note: You must have root access to run these scripts.
+
 -----ping.py (2a)-----
 
-In this python script, I use scapy to send an ICMP (ping) message given an IP address. You must have root access
-to run this script. The output from tcpdump for the packet sent and the response received is in ping_dump.txt.
+In this python script, I use scapy to send an ICMP (ping) message given an IP address. The output from tcpdump for
+the packet sent and the response received is in ping_dump.txt.
 
 Example command:
 python ping.py 160.39.110.199

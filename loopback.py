@@ -1,3 +1,17 @@
+########################################################################
+# Evan O'Connor (eco2116)
+# Network Security
+# Programming Assignment 3
+#
+# loopback.py
+# This script uses a loopback interface to send empty TCP/IP packets
+# to destination ports ranging from 3000 to 3020 using a user-inputted
+# source port. It then sends five TCP/IP packets with random
+# strings of length 10 to the port inputted by the user.
+# Usage: python loopback.py <src_port> <dst_port>
+#
+########################################################################
+
 # Supress warning about no default IPv6 route
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)

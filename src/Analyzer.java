@@ -11,6 +11,8 @@ import java.util.*;
  *
  * Generates the top 20 n-grams for a given binary file and prints to an output file. User can select
  * values of n and slide if they are in the range of the assignment (see validation below).
+ *
+ * Usage: java Analyzer <n> <s> <inputFile> <outputFile>
  */
 public class Analyzer {
 

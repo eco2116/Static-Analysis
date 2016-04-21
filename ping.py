@@ -1,3 +1,14 @@
+########################################################################
+# Evan O'Connor (eco2116)
+# Network Security
+# Programming Assignment 3
+#
+# ping.py
+# This sends ICMP (ping) messages to a specified IP address.
+# Usage: python ping.py <dst_ip>
+#
+########################################################################
+
 # Supress warning about no default IPv6 route
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
