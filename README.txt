@@ -74,8 +74,9 @@ python ping.py 160.39.110.199
 -----get.py (2b)-----
 
 In this python script, I read source IP and port and destination IP and port from a file named inpartb.txt. This
-input file also contains a sample get message body, which is read in and used as the body of a new get message
-which is sent to the chosen destination. The output from tcpdump is stored in the file in.txt.
+input file also contains a sample get message body (from http://ssdeep.sourceforge.net/), which is read in and used as
+the body of a new get message which is sent to the chosen destination. The output from tcpdump is stored in
+the file in.txt.
 
 Example command:
 python get.py
