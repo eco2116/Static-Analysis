@@ -1,6 +1,5 @@
-Evan O'Connor (eco2116)
-Network Security
-Programming Assignment 3
+Static Analaysis of Byte Streams
+written by Evan O'Connor
 
 README.txt
 
